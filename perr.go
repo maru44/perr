@@ -84,6 +84,10 @@ func New(text string, flag uint32, output ...string) *Err {
 }
 
 func Wrap(in error, flag uint32, output ...string) *Err {
+	if in == nil {
+		return nil
+	}
+
 	var out string
 	if len(output) > 0 {
 		out = strings.Join(output, ".")
