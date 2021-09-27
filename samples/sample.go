@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -29,7 +30,9 @@ func main() {
 	fmt.Printf("For Output: %v\n", sample2.Output().Error())
 	fmt.Printf("For logging: %v\n", sample2.Error())
 	fmt.Printf("Dict:\n%v\n", sample2.ToDict())
-	fmt.Printf("01File: %v\n\n", sample2.ToDict().Traces[0].File)
+	fmt.Printf("01File: %v\n", sample2.ToDict().Traces[0].File)
+	json_, _ := json.Marshal(sample2.ToDict())
+	fmt.Printf("json: %v\n\n", string(json_))
 
 	fmt.Println("=================== New error ===================")
 	sample3 := perr.New("pouring coffee into tea cup", perr.FlagIAmTeaPot)
@@ -59,10 +62,11 @@ func main() {
 // For Output: With Perr.Have a nice day
 // For logging: strconv.Atoi: parsing "sample": invalid syntax
 // Dict:
-// &{strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/perr/samples/sample.go:38 ===> outputSample
-// /home/secret/perr/samples/sample.go:18 ===> main
-//  2021-09-28 06:18:05.5024428 +0900 JST m=+0.000136901}
+// &{strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/perr/samples/sample.go:18 ===> outputSample
+// /home/secret/perr/samples/sample.go:29 ===> main
+//  2021-09-28 07:11:03.0386405 +0900 JST m=+0.000142201}
 // 01File: /home/secret/perr/samples/sample.go
+// json: {"error":"strconv.Atoi: parsing \"sample\": invalid syntax","output":"With Perr.Have a nice day","level":"EXTERNAL ERROR","traces":[{"file":"/home/secret/perr/samples/sample.go","line":18,"name":"outputSample","program_counter":4877721},{"file":"/home/secret/perr/samples/sample.go","line":29,"name":"main","program_counter":4878548}],"occured_at":"2021-09-28T07:11:03.0386405+09:00"}
 
 // =================== New error ===================
 // For Output: I'm a teapot
