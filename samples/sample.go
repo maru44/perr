@@ -24,7 +24,7 @@ func main() {
 	fmt.Printf("For logging: %v\n", sample1.Error())
 	fmt.Printf("Stack trace:\n%v\n", sample1.Traces())
 
-	fmt.Println("=================== Wrap error ===================")
+	fmt.Println("=================== original output & dict ===================")
 	sample2 := outputSample()
 	fmt.Printf("For Output: %v\n", sample2.Output().Error())
 	fmt.Printf("For logging: %v\n", sample2.Error())
@@ -36,6 +36,14 @@ func main() {
 	fmt.Printf("For Output: %v\n", sample3.Output().Error())
 	fmt.Printf("For logging: %v\n", sample3.Error())
 	fmt.Printf("Stack trace:\n%v\n", sample3.Traces())
+
+	fmt.Println("=================== Level ===================")
+	sample4 := perr.New("dangerous", perr.FlagInternalServerErrorWithUrgency)
+	fmt.Println(sample4.Level())
+	sample5 := perr.New("not dangerous but system error", perr.FlagInternalServerError)
+	fmt.Println(sample5.Level())
+	sample6 := perr.New("caused by client", perr.FlagBadRequest)
+	fmt.Println(sample6.Level())
 }
 
 /*                       output                       */
@@ -47,7 +55,7 @@ func main() {
 // /home/secret/perr/samples/sample.go:33 ===> wrapSample
 // /home/secret/perr/samples/sample.go:12 ===> main
 
-// =================== Wrap error ===================
+// =================== original output & dict ===================
 // For Output: With Perr.Have a nice day
 // For logging: strconv.Atoi: parsing "sample": invalid syntax
 // Dict:
@@ -61,3 +69,8 @@ func main() {
 // For logging: pouring coffee into tea cup
 // Stack trace:
 // /home/secret/perr/samples/sample.go:25 ===> main
+
+// =================== Level ===================
+// ALERT
+// INTERNAL ERROR
+// EXTERNAL ERROR
