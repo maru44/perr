@@ -51,13 +51,13 @@ func main() {
 // For Output: With Perr.Have a nice day
 // For logging: strconv.Atoi: parsing "sample": invalid syntax
 // Dict:
-// &{strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/codes/perr/samples/sample.go:38 ===> outputSample
-// /home/secret/codes/perr/samples/sample.go:18 ===> main
+// &{strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/perr/samples/sample.go:38 ===> outputSample
+// /home/secret/perr/samples/sample.go:18 ===> main
 //  2021-09-28 06:18:05.5024428 +0900 JST m=+0.000136901}
-// 01File: /home/secret/codes/perr/samples/sample.go
+// 01File: /home/secret/perr/samples/sample.go
 
 // =================== New error ===================
 // For Output: I'm a teapot
 // For logging: pouring coffee into tea cup
 // Stack trace:
-// /home/secret/codes/perr/samples/sample.go:25 ===> main
+// /home/secret/perr/samples/sample.go:25 ===> main
