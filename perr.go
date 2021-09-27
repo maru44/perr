@@ -71,7 +71,7 @@ func (e Err) ToDict() *ErrDict {
 func New(text string, flag uint32, output ...string) *Err {
 	var out string
 	if len(output) > 0 {
-		out = strings.Join(output, ",")
+		out = strings.Join(output, ".")
 	}
 
 	return &Err{
@@ -86,7 +86,7 @@ func New(text string, flag uint32, output ...string) *Err {
 func Wrap(in error, flag uint32, output ...string) *Err {
 	var out string
 	if len(output) > 0 {
-		out = strings.Join(output, ",")
+		out = strings.Join(output, ".")
 	}
 
 	return &Err{
