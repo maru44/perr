@@ -31,6 +31,8 @@ func main() {
 	fmt.Printf("For logging: %v\n", sample2.Error())
 	fmt.Printf("Dict:\n%v\n", sample2.ToDict())
 	fmt.Printf("01File: %v\n", sample2.ToDict().Traces[0].File)
+	fmt.Printf("Error: %v\n", sample2.ToDict().Error)
+	fmt.Printf("Unwrap: %v\n", sample2.UnWrap())
 	json_, _ := json.Marshal(sample2.ToDict())
 	fmt.Printf("json: %v\n\n", string(json_))
 
@@ -47,6 +49,10 @@ func main() {
 	fmt.Println(sample5.Level())
 	sample6 := perr.New("caused by client", perr.FlagBadRequest)
 	fmt.Println(sample6.Level())
+
+	fmt.Println("=================== nil ===================")
+	sample7 := perr.Wrap(nil, perr.FlagBadGateway)
+	fmt.Println(sample7)
 }
 
 /*                       output                       */
@@ -55,26 +61,30 @@ func main() {
 // For Output: Bad Request
 // For logging: strconv.Atoi: parsing "sample": invalid syntax
 // Stack trace:
-// /home/secret/perr/samples/sample.go:33 ===> wrapSample
-// /home/secret/perr/samples/sample.go:12 ===> main
+// /home/secret/perr/samples/sample.go:13 ===> wrapSample
+// /home/secret/perr/samples/sample.go:23 ===> main
 
 // =================== original output & dict ===================
 // For Output: With Perr.Have a nice day
 // For logging: strconv.Atoi: parsing "sample": invalid syntax
 // Dict:
-// &{strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/perr/samples/sample.go:18 ===> outputSample
+// &{strconv.Atoi: parsing "sample": invalid syntax strconv.Atoi: parsing "sample": invalid syntax With Perr.Have a nice day EXTERNAL ERROR /home/secret/perr/samples/sample.go:18 ===> outputSample
 // /home/secret/perr/samples/sample.go:29 ===> main
-//  2021-09-28 07:11:03.0386405 +0900 JST m=+0.000142201}
+//  2021-09-28 08:01:50.1127957 +0900 JST m=+0.000146801}
 // 01File: /home/secret/perr/samples/sample.go
-// json: {"error":"strconv.Atoi: parsing \"sample\": invalid syntax","output":"With Perr.Have a nice day","level":"EXTERNAL ERROR","traces":[{"file":"/home/secret/perr/samples/sample.go","line":18,"name":"outputSample","program_counter":4877721},{"file":"/home/secret/perr/samples/sample.go","line":29,"name":"main","program_counter":4878548}],"occured_at":"2021-09-28T07:11:03.0386405+09:00"}
+// Error: strconv.Atoi: parsing "sample": invalid syntax
+// Unwrap: strconv.Atoi: parsing "sample": invalid syntax
+// json: {"error":{"Func":"Atoi","Num":"sample","Err":{}},"text":"strconv.Atoi: parsing \"sample\": invalid syntax","output":"With Perr.Have a nice day","level":"EXTERNAL ERROR","traces":[{"file":"/home/secret/perr/samples/sample.go","line":18,"name":"outputSample","program_counter":4877945},{"file":"/home/secret/perr/samples/sample.go","line":29,"name":"main","program_counter":4878772}],"occured_at":"2021-09-28T08:01:50.1127957+09:00"}
 
 // =================== New error ===================
 // For Output: I'm a teapot
 // For logging: pouring coffee into tea cup
 // Stack trace:
-// /home/secret/perr/samples/sample.go:25 ===> main
+// /home/secret/perr/samples/sample.go:40 ===> main
 
 // =================== Level ===================
 // ALERT
 // INTERNAL ERROR
 // EXTERNAL ERROR
+// =================== nil ===================
+// <nil>

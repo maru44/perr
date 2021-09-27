@@ -78,6 +78,10 @@ func (e Err) Output() error {
 		return errors.New(e.textOutput)
 	}
 
+	return e.error()
+}
+
+func (e Err) error() error {
 	switch e.Flag {
 	case FlagBadRequest:
 		return BadRequest

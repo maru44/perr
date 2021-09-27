@@ -11,6 +11,7 @@ type (
 		Traces() PerrStack
 		Level() ErrLevel
 		ToDict() *ErrDict
+		UnWrap() error
 	}
 
 	Err struct {
@@ -23,7 +24,8 @@ type (
 	}
 
 	ErrDict struct {
-		Error     string      `json:"error"`
+		Error     error       `json:"error"`
+		Text      string      `json:"text"`
 		Output    string      `json:"output"`
 		Level     string      `json:"level"`
 		Traces    StackTraces `json:"traces"`
@@ -56,9 +58,18 @@ func (e Err) Level() ErrLevel {
 	return l
 }
 
+func (e Err) UnWrap() error {
+	if e.Inner != nil {
+		return e.Inner
+	} else {
+		return e.error()
+	}
+}
+
 func (e Err) ToDict() *ErrDict {
 	return &ErrDict{
-		Error:     e.Error(),
+		Error:     e.UnWrap(),
+		Text:      e.Error(),
 		Output:    e.Output().Error(),
 		Level:     string(e.Level()),
 		Traces:    e.traces,
