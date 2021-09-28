@@ -1,52 +1,64 @@
 package perr
 
 import (
+	"errors"
 	"strings"
 	"time"
 )
 
 type (
 	Perror interface {
+		// error for client or response
 		Output() error
+		// get stacktrace
 		Traces() PerrStack
+		// get Perror level
 		Level() ErrLevel
+		// output ErrDict
 		ToDict() *ErrDict
-		UnWrap() error
+		// get cause
+		Unwrap() error
+		// whether Perror is caused by target
+		Is(target error) bool
 	}
 
 	Err struct {
-		Inner        error
-		Flag         uint32
-		OccuredAt    time.Time
-		textInternal string
-		textOutput   string
-		traces       StackTraces
+		cause           error
+		Flag            uint32
+		OccuredAt       time.Time
+		msgForDeveloper string
+		msgForClient    string
+		traces          StackTraces
 	}
 
 	ErrDict struct {
-		Error     error       `json:"error"`
-		Text      string      `json:"text"`
-		Output    string      `json:"output"`
-		Level     string      `json:"level"`
-		Traces    StackTraces `json:"traces"`
-		OccuredAt time.Time   `json:"occured_at"`
+		Error           error       `json:"error"`
+		MsgForDeveloper string      `json:"msg_for_developer"`
+		MsgForClient    string      `json:"msg_for_client"`
+		Level           string      `json:"level"`
+		Traces          StackTraces `json:"traces"`
+		OccuredAt       time.Time   `json:"occured_at"`
 	}
 )
 
+// get message for developer
+// this method is for debug
 func (e Err) Error() string {
-	if e.Inner != nil {
-		return e.Inner.Error()
-	} else if e.textInternal != "" {
-		return e.textInternal
+	if e.cause != nil {
+		return e.cause.Error()
+	} else if e.msgForDeveloper != "" {
+		return e.msgForDeveloper
 	} else {
 		return IntervalServerError.Error()
 	}
 }
 
+// get stacktrace of Perror
 func (e Err) Traces() StackTraces {
 	return e.traces
 }
 
+// get Level of Perror
 func (e Err) Level() ErrLevel {
 	l := ErrLevelExternal
 	flag := e.Flag
@@ -58,57 +70,64 @@ func (e Err) Level() ErrLevel {
 	return l
 }
 
-func (e Err) UnWrap() error {
-	if e.Inner != nil {
-		return e.Inner
+// get cause of Perror
+func (e Err) Unwrap() error {
+	if e.cause != nil {
+		return e.cause
 	} else {
 		return e.error()
 	}
 }
 
+// whether Perror is caused by target
+func (e Err) Is(target error) bool { return errors.Is(e.Unwrap(), target) }
+
+// Convert Perror To ErrDict pointer
 func (e Err) ToDict() *ErrDict {
 	return &ErrDict{
-		Error:     e.UnWrap(),
-		Text:      e.Error(),
-		Output:    e.Output().Error(),
-		Level:     string(e.Level()),
-		Traces:    e.traces,
-		OccuredAt: e.OccuredAt,
+		Error:           e.Unwrap(),
+		MsgForDeveloper: e.Error(),
+		MsgForClient:    e.Output().Error(),
+		Level:           string(e.Level()),
+		Traces:          e.traces,
+		OccuredAt:       e.OccuredAt,
 	}
 }
 
 /* initialize perr */
 
-func New(text string, flag uint32, output ...string) *Err {
+// initialize Perror
+func New(msgForDeveloper string, flag uint32, msgForClient ...string) *Err {
 	var out string
-	if len(output) > 0 {
-		out = strings.Join(output, ".")
+	if len(msgForDeveloper) > 0 {
+		out = strings.Join(msgForClient, "\n")
 	}
 
 	return &Err{
-		Flag:         flag,
-		textInternal: text,
-		textOutput:   out,
-		OccuredAt:    time.Now(),
-		traces:       NewTrace(callers()),
+		Flag:            flag,
+		msgForDeveloper: msgForDeveloper,
+		msgForClient:    out,
+		OccuredAt:       time.Now(),
+		traces:          NewTrace(callers()),
 	}
 }
 
-func Wrap(in error, flag uint32, output ...string) *Err {
-	if in == nil {
+// wrap error and initialize Perror
+func Wrap(cause error, flag uint32, msgForClient ...string) *Err {
+	if cause == nil {
 		return nil
 	}
 
 	var out string
-	if len(output) > 0 {
-		out = strings.Join(output, ".")
+	if len(msgForClient) > 0 {
+		out = strings.Join(msgForClient, ".")
 	}
 
 	return &Err{
-		Inner:      in,
-		Flag:       flag,
-		textOutput: out,
-		OccuredAt:  time.Now(),
-		traces:     NewTrace(callers()),
+		cause:        cause,
+		Flag:         flag,
+		msgForClient: out,
+		OccuredAt:    time.Now(),
+		traces:       NewTrace(callers()),
 	}
 }

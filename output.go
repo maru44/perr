@@ -73,9 +73,10 @@ var (
 	NetworkAuthenticationRequired = errors.New("Network Authentication Required") // 511
 )
 
+// get message for client
 func (e Err) Output() error {
-	if e.textOutput != "" {
-		return errors.New(e.textOutput)
+	if e.msgForClient != "" {
+		return errors.New(e.msgForClient)
 	}
 
 	return e.error()
