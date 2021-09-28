@@ -59,14 +59,42 @@ func main() {
 	// EXTERNAL ERROR
 	// EXTERNAL ERROR
 
-	/* =================== New error =================== */
-	fmt.Println("\n=================== nil ===================")
-	sample7 := perr.Wrap(nil, perr.BadGateway)
-	fmt.Println(sample7)
+	/* =================== with level =================== */
+	fmt.Println("\n=================== with level ===================")
+	myLevel := perr.ErrLevel("My Level")
+	sample7 := perr.NewWithLevel("this is my level", perr.IAmATeaPot, myLevel)
+	fmt.Println(sample7.Level)
+
+	// output >>
+	// My Level
+
+	/* =================== wrap nil =================== */
+	fmt.Println("\n=================== wrap nil ===================")
+	sample8 := perr.Wrap(nil, perr.BadGateway)
+	fmt.Println(sample8)
 
 	// output >>
 	// <nil>
 
-	/* =================== New error =================== */
+	/* =================== Stack trace =================== */
+	fmt.Println("\n=================== Stack trace ===================")
+	sample9 := perr.Wrap(err, perr.BadRequest)
+	fmt.Printf("stacktrace:\n%v\n", sample9.Traces())
 
+	// output >>
+	// stacktrace:
+	// /secret/perr/samples/sample.go:81 ===> main
+
+	/* =================== Map & Json =================== */
+	fmt.Println("\n=================== Map & Json ===================")
+	fmt.Printf("map:\n%v\n", sample2.Map())
+	json_ := sample2.Json()
+	fmt.Printf("json:\n%v\n\n", string(json_))
+
+	// output >>
+	// 	map:
+	// &{I'm a teapot Don't pour coffee! Someone pour coffee into tea cup. Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
+	//  2021-09-28 21:37:06.7194034 +0900 JST m=+0.000158501}
+	// json:
+	// {"error":"I'm a teapot","teated_as":"Don't pour coffee!","msg_for_developer":"Someone pour coffee into tea cup.","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4886631}],"occured_at":"2021-09-28T21:37:06.7194034+09:00"}
 }

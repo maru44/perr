@@ -1,6 +1,7 @@
 package perr
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -13,7 +14,9 @@ type (
 		// get stacktrace
 		Traces() PerrStack
 		// output ErrDict
-		ToDict() *ErrDict
+		Map() *ErrDict
+		// ErrDict >> json
+		Json() []byte
 		// get cause
 		Unwrap() error
 		// whether Perror is caused by target
@@ -31,8 +34,18 @@ type (
 	}
 
 	ErrDict struct {
-		Error           error       `json:"error"`
-		TreatedAs       error       `json:"teated_as"`
+		Error           error
+		TreatedAs       error
+		MsgForDeveloper string
+		MsgForClient    string
+		Level           string
+		Traces          StackTraces
+		OccuredAt       time.Time
+	}
+
+	errDictJson struct {
+		Error           string      `json:"error"`
+		TreatedAs       string      `json:"teated_as"`
 		MsgForDeveloper string      `json:"msg_for_developer"`
 		MsgForClient    string      `json:"msg_for_client"`
 		Level           string      `json:"level"`
@@ -68,7 +81,7 @@ func (e Err) Traces() StackTraces {
 }
 
 // Convert Perror To ErrDict pointer
-func (e Err) ToDict() *ErrDict {
+func (e Err) Map() *ErrDict {
 	return &ErrDict{
 		Error:           e.Unwrap(),
 		TreatedAs:       e.Output(),
@@ -78,6 +91,24 @@ func (e Err) ToDict() *ErrDict {
 		Traces:          e.traces,
 		OccuredAt:       e.OccuredAt,
 	}
+}
+
+func (e Err) Json() []byte {
+	m := e.Map()
+	j := errDictJson{
+		Error:           m.Error.Error(),
+		TreatedAs:       m.TreatedAs.Error(),
+		MsgForDeveloper: m.MsgForDeveloper,
+		MsgForClient:    m.MsgForClient,
+		Level:           m.Level,
+		Traces:          m.Traces,
+		OccuredAt:       m.OccuredAt,
+	}
+	json_, err := json.Marshal(j)
+	if err != nil {
+		return nil
+	}
+	return json_
 }
 
 // get cause of Perror
