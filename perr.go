@@ -63,7 +63,7 @@ func (e Err) Error() string {
 	} else if e.msgForDeveloper != "" {
 		return fmt.Sprintf("%s: %s", e.As.Error(), e.msgForDeveloper)
 	} else {
-		return InternalServerError.Error()
+		return e.As.Error()
 	}
 }
 
