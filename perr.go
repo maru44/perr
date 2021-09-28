@@ -3,6 +3,7 @@ package perr
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -60,7 +61,7 @@ func (e Err) Error() string {
 	if e.cause != nil {
 		return e.cause.Error()
 	} else if e.msgForDeveloper != "" {
-		return e.msgForDeveloper
+		return fmt.Sprintf("%s: %s", e.As.Error(), e.msgForDeveloper)
 	} else {
 		return InternalServerError.Error()
 	}

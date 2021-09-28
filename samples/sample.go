@@ -24,7 +24,7 @@ func main() {
 	fmt.Printf("Client: %v / Developer: %v\n\n", sample1.Output().Error(), sample1.Error())
 
 	// output >>
-	// Client: I'm a teapot / Developer: Someone pour coffee into tea cup.
+	// Client: I'm a teapot / Developer: I'm a teapot: Someone pour coffee into tea cup.
 
 	/* =================== New error with custom message =================== */
 	fmt.Println("=================== New error with custom message ===================")
@@ -32,7 +32,7 @@ func main() {
 	fmt.Printf("Client: %v / Developer: %v\n\n", sample2.Output().Error(), sample2.Error())
 
 	// output >>
-	// Client: Don't pour coffee! / Developer: Someone pour coffee into tea cup.
+	// Client: Don't pour coffee! / Developer: I'm a teapot: Someone pour coffee into tea cup.
 
 	/* =================== Judge whether the error cause Perror =================== */
 	fmt.Println("=================== Judge whether the error cause Perror ===================")
@@ -96,5 +96,5 @@ func main() {
 	// &{I'm a teapot Don't pour coffee! Someone pour coffee into tea cup. Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
 	//  2021-09-28 21:37:06.7194034 +0900 JST m=+0.000158501}
 	// json:
-	// {"error":"I'm a teapot","teated_as":"Don't pour coffee!","msg_for_developer":"Someone pour coffee into tea cup.","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4886631}],"occured_at":"2021-09-28T21:37:06.7194034+09:00"}
+	// {"error":"I'm a teapot","teated_as":"Don't pour coffee!","msg_for_developer":"I'm a teapot: Someone pour coffee into tea cup.","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4886631}],"occured_at":"2021-09-28T21:37:06.7194034+09:00"}
 }
