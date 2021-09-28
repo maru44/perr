@@ -169,22 +169,3 @@ func WrapWithLevel(cause error, as error, level ErrLevel, msgForClient ...string
 		traces:       NewTrace(callers()),
 	}
 }
-
-// as ===> level
-func getErrLevel(as error) ErrLevel {
-	var l ErrLevel
-	switch as {
-	case InternalServerErrorWithUrgency, NotExtendedWithUrgency, BadGatewayWithUrgency,
-		ServiceUnavailableWithUrgency, GatewayTimeoutWithUrgency, HTTPVersionNotSupportedWithUrgency,
-		VariantAlsoNegotiatesWithUrgency, InsufficientStorageWithUrgency, LoopDetectedWithUrgency,
-		NotExtendedWithUrgency, NetworkAuthenticationRequiredWithUrgency:
-		l = ErrLevelAlert
-	case InternalServerError, NotImplemented, BadGateway, ServiceUnavailable,
-		GatewayTimeout, HTTPVersionNotSupported, VariantAlsoNegotiates,
-		InsufficientStorage, LoopDetected, NotExtended, NetworkAuthenticationRequired:
-		l = ErrLevelInternal
-	default:
-		l = ErrLevelExternal
-	}
-	return l
-}

@@ -51,17 +51,16 @@ func NewTrace(pcs []uintptr) StackTraces {
 		if fn == nil {
 			return traces
 		}
-		trace.Name = trimPkgName(fn)
+		trace.Name = funcname(fn.Name())
 		trace.File, trace.Line = fn.FileLine(pc - 1)
 		traces[i] = trace
 	}
 	return traces
 }
 
-func trimPkgName(fn *runtime.Func) string {
-	name := fn.Name()
-	if ld := strings.LastIndex(name, "."); ld >= 0 {
-		name = name[ld+1:]
-	}
-	return name
+func funcname(name string) string {
+	i := strings.LastIndex(name, "/")
+	name = name[i+1:]
+	i = strings.Index(name, ".")
+	return name[i+1:]
 }
