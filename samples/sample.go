@@ -79,7 +79,7 @@ func main() {
 	/* =================== Stack trace =================== */
 	fmt.Println("\n=================== Stack trace ===================")
 	sample9 := perr.Wrap(err, perr.BadRequest)
-	fmt.Printf("stacktrace:\n%v\n", sample9.Traces())
+	fmt.Printf("stacktrace:\n%v\n", sample9.Traces().String())
 
 	// output >>
 	// stacktrace:

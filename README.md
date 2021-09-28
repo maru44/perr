@@ -17,7 +17,7 @@ For example, `dial tcp 127.0.0.1:3306: connect: connection refused` must not be 
 
 - `Map()` and `Json()` method make it easy to store and analyze error for you.<br/>
 - `Is()` method and `Level` make it easy to handle error.<br/>
-- You can trace error with `Trace()` method.
+- You can trace error with `Traces()` method.
 
 ## How to use
 
@@ -106,7 +106,7 @@ func main() {
 	/* =================== Stack trace =================== */
 	fmt.Println("\n=================== Stack trace ===================")
 	sample9 := perr.Wrap(err, perr.BadRequest)
-	fmt.Printf("stacktrace:\n%v\n", sample9.Traces())
+	fmt.Printf("stacktrace:\n%v\n", sample9.Traces().String())
 
 	// output >>
 	// stacktrace:
