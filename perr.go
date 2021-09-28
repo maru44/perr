@@ -12,8 +12,6 @@ type (
 		Output() error
 		// get stacktrace
 		Traces() PerrStack
-		// get Perror level
-		Level() ErrLevel
 		// output ErrDict
 		ToDict() *ErrDict
 		// get cause
@@ -25,6 +23,7 @@ type (
 	Err struct {
 		cause           error
 		As              error
+		Level           ErrLevel
 		OccuredAt       time.Time
 		msgForDeveloper string
 		msgForClient    string
@@ -54,28 +53,31 @@ func (e Err) Error() string {
 	}
 }
 
+// get message for client
+func (e Err) Output() error {
+	if e.msgForClient != "" {
+		return errors.New(e.msgForClient)
+	}
+
+	return e.As
+}
+
 // get stacktrace of Perror
 func (e Err) Traces() StackTraces {
 	return e.traces
 }
 
-// get Level of Perror
-func (e Err) Level() ErrLevel {
-	var l ErrLevel
-	switch e.As {
-	case InternalServerErrorWithUrgency, NotExtendedWithUrgency, BadGatewayWithUrgency,
-		ServiceUnavailableWithUrgency, GatewayTimeoutWithUrgency, HTTPVersionNotSupportedWithUrgency,
-		VariantAlsoNegotiatesWithUrgency, InsufficientStorageWithUrgency, LoopDetectedWithUrgency,
-		NotExtendedWithUrgency, NetworkAuthenticationRequiredWithUrgency:
-		l = ErrLevelAlert
-	case InternalServerError, NotImplemented, BadGateway, ServiceUnavailable,
-		GatewayTimeout, HTTPVersionNotSupported, VariantAlsoNegotiates,
-		InsufficientStorage, LoopDetected, NotExtended, NetworkAuthenticationRequired:
-		l = ErrLevelInternal
-	default:
-		l = ErrLevelExternal
+// Convert Perror To ErrDict pointer
+func (e Err) ToDict() *ErrDict {
+	return &ErrDict{
+		Error:           e.Unwrap(),
+		TreatedAs:       e.Output(),
+		MsgForDeveloper: e.Error(),
+		MsgForClient:    e.Output().Error(),
+		Level:           string(e.Level),
+		Traces:          e.traces,
+		OccuredAt:       e.OccuredAt,
 	}
-	return l
 }
 
 // get cause of Perror
@@ -90,19 +92,6 @@ func (e Err) Unwrap() error {
 // whether Perror is caused by target
 func (e Err) Is(target error) bool { return errors.Is(e.Unwrap(), target) }
 
-// Convert Perror To ErrDict pointer
-func (e Err) ToDict() *ErrDict {
-	return &ErrDict{
-		Error:           e.Unwrap(),
-		TreatedAs:       e.Output(),
-		MsgForDeveloper: e.Error(),
-		MsgForClient:    e.Output().Error(),
-		Level:           string(e.Level()),
-		Traces:          e.traces,
-		OccuredAt:       e.OccuredAt,
-	}
-}
-
 /* initialize perr */
 
 // initialize Perror
@@ -114,6 +103,7 @@ func New(msgForDeveloper string, as error, msgForClient ...string) *Err {
 
 	return &Err{
 		As:              as,
+		Level:           getErrLevel(as),
 		msgForDeveloper: msgForDeveloper,
 		msgForClient:    out,
 		OccuredAt:       time.Now(),
@@ -134,9 +124,67 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 
 	return &Err{
 		cause:        cause,
+		Level:        getErrLevel(as),
 		As:           as,
 		msgForClient: out,
 		OccuredAt:    time.Now(),
 		traces:       NewTrace(callers()),
 	}
+}
+
+// initialize Perror with level
+func NewWithLevel(msgForDeveloper string, as error, level ErrLevel, msgForClient ...string) *Err {
+	var out string
+	if len(msgForDeveloper) > 0 {
+		out = strings.Join(msgForClient, "\n")
+	}
+
+	return &Err{
+		As:              as,
+		Level:           level,
+		msgForDeveloper: msgForDeveloper,
+		msgForClient:    out,
+		OccuredAt:       time.Now(),
+		traces:          NewTrace(callers()),
+	}
+}
+
+// wrap error and initialize Perror with Level
+func WrapWithLevel(cause error, as error, level ErrLevel, msgForClient ...string) *Err {
+	if cause == nil {
+		return nil
+	}
+
+	var out string
+	if len(msgForClient) > 0 {
+		out = strings.Join(msgForClient, ".")
+	}
+
+	return &Err{
+		cause:        cause,
+		Level:        level,
+		As:           as,
+		msgForClient: out,
+		OccuredAt:    time.Now(),
+		traces:       NewTrace(callers()),
+	}
+}
+
+// as ===> level
+func getErrLevel(as error) ErrLevel {
+	var l ErrLevel
+	switch as {
+	case InternalServerErrorWithUrgency, NotExtendedWithUrgency, BadGatewayWithUrgency,
+		ServiceUnavailableWithUrgency, GatewayTimeoutWithUrgency, HTTPVersionNotSupportedWithUrgency,
+		VariantAlsoNegotiatesWithUrgency, InsufficientStorageWithUrgency, LoopDetectedWithUrgency,
+		NotExtendedWithUrgency, NetworkAuthenticationRequiredWithUrgency:
+		l = ErrLevelAlert
+	case InternalServerError, NotImplemented, BadGateway, ServiceUnavailable,
+		GatewayTimeout, HTTPVersionNotSupported, VariantAlsoNegotiates,
+		InsufficientStorage, LoopDetected, NotExtended, NetworkAuthenticationRequired:
+		l = ErrLevelInternal
+	default:
+		l = ErrLevelExternal
+	}
+	return l
 }

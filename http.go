@@ -84,12 +84,3 @@ var (
 	NotExtendedWithUrgency                   = errors.New("Not Extended")                    // 510
 	NetworkAuthenticationRequiredWithUrgency = errors.New("Network Authentication Required") // 511
 )
-
-// get message for client
-func (e Err) Output() error {
-	if e.msgForClient != "" {
-		return errors.New(e.msgForClient)
-	}
-
-	return e.As
-}
