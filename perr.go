@@ -24,7 +24,7 @@ type (
 
 	Err struct {
 		cause           error
-		Flag            uint32
+		As              error
 		OccuredAt       time.Time
 		msgForDeveloper string
 		msgForClient    string
@@ -33,6 +33,7 @@ type (
 
 	ErrDict struct {
 		Error           error       `json:"error"`
+		TreatedAs       error       `json:"teated_as"`
 		MsgForDeveloper string      `json:"msg_for_developer"`
 		MsgForClient    string      `json:"msg_for_client"`
 		Level           string      `json:"level"`
@@ -49,7 +50,7 @@ func (e Err) Error() string {
 	} else if e.msgForDeveloper != "" {
 		return e.msgForDeveloper
 	} else {
-		return IntervalServerError.Error()
+		return InternalServerError.Error()
 	}
 }
 
@@ -60,12 +61,19 @@ func (e Err) Traces() StackTraces {
 
 // get Level of Perror
 func (e Err) Level() ErrLevel {
-	l := ErrLevelExternal
-	flag := e.Flag
-	if FlagInternalServerError <= flag && flag < FlagInternalServerErrorWithUrgency {
-		l = ErrLevelInternal
-	} else if flag == FlagInternalServerErrorWithUrgency {
+	var l ErrLevel
+	switch e.As {
+	case InternalServerErrorWithUrgency, NotExtendedWithUrgency, BadGatewayWithUrgency,
+		ServiceUnavailableWithUrgency, GatewayTimeoutWithUrgency, HTTPVersionNotSupportedWithUrgency,
+		VariantAlsoNegotiatesWithUrgency, InsufficientStorageWithUrgency, LoopDetectedWithUrgency,
+		NotExtendedWithUrgency, NetworkAuthenticationRequiredWithUrgency:
 		l = ErrLevelAlert
+	case InternalServerError, NotImplemented, BadGateway, ServiceUnavailable,
+		GatewayTimeout, HTTPVersionNotSupported, VariantAlsoNegotiates,
+		InsufficientStorage, LoopDetected, NotExtended, NetworkAuthenticationRequired:
+		l = ErrLevelInternal
+	default:
+		l = ErrLevelExternal
 	}
 	return l
 }
@@ -75,7 +83,7 @@ func (e Err) Unwrap() error {
 	if e.cause != nil {
 		return e.cause
 	} else {
-		return e.error()
+		return e.As
 	}
 }
 
@@ -86,6 +94,7 @@ func (e Err) Is(target error) bool { return errors.Is(e.Unwrap(), target) }
 func (e Err) ToDict() *ErrDict {
 	return &ErrDict{
 		Error:           e.Unwrap(),
+		TreatedAs:       e.Output(),
 		MsgForDeveloper: e.Error(),
 		MsgForClient:    e.Output().Error(),
 		Level:           string(e.Level()),
@@ -97,14 +106,14 @@ func (e Err) ToDict() *ErrDict {
 /* initialize perr */
 
 // initialize Perror
-func New(msgForDeveloper string, flag uint32, msgForClient ...string) *Err {
+func New(msgForDeveloper string, as error, msgForClient ...string) *Err {
 	var out string
 	if len(msgForDeveloper) > 0 {
 		out = strings.Join(msgForClient, "\n")
 	}
 
 	return &Err{
-		Flag:            flag,
+		As:              as,
 		msgForDeveloper: msgForDeveloper,
 		msgForClient:    out,
 		OccuredAt:       time.Now(),
@@ -113,7 +122,7 @@ func New(msgForDeveloper string, flag uint32, msgForClient ...string) *Err {
 }
 
 // wrap error and initialize Perror
-func Wrap(cause error, flag uint32, msgForClient ...string) *Err {
+func Wrap(cause error, as error, msgForClient ...string) *Err {
 	if cause == nil {
 		return nil
 	}
@@ -125,7 +134,7 @@ func Wrap(cause error, flag uint32, msgForClient ...string) *Err {
 
 	return &Err{
 		cause:        cause,
-		Flag:         flag,
+		As:           as,
 		msgForClient: out,
 		OccuredAt:    time.Now(),
 		traces:       NewTrace(callers()),

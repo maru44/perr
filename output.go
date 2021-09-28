@@ -60,7 +60,7 @@ var (
 
 	/* server error */
 
-	IntervalServerError           = errors.New("Internal Server Error")           // 500
+	InternalServerError           = errors.New("Internal Server Error")           // 500
 	NotImplemented                = errors.New("NotImplemented")                  // 501
 	BadGateway                    = errors.New("BadGateway")                      // 502
 	ServiceUnavailable            = errors.New("Service Unavailable")             // 503
@@ -71,6 +71,18 @@ var (
 	LoopDetected                  = errors.New("Loop Detected")                   // 508
 	NotExtended                   = errors.New("Not Extended")                    // 510
 	NetworkAuthenticationRequired = errors.New("Network Authentication Required") // 511
+
+	InternalServerErrorWithUrgency           = errors.New("Internal Server Error")           // 500
+	NotImplementedWithUrgency                = errors.New("NotImplemented")                  // 501
+	BadGatewayWithUrgency                    = errors.New("BadGateway")                      // 502
+	ServiceUnavailableWithUrgency            = errors.New("Service Unavailable")             // 503
+	GatewayTimeoutWithUrgency                = errors.New("Gateway Timeout")                 // 504
+	HTTPVersionNotSupportedWithUrgency       = errors.New("HTTP Version Not Supported")      // 505
+	VariantAlsoNegotiatesWithUrgency         = errors.New("Variant Also Negotiates")         // 506
+	InsufficientStorageWithUrgency           = errors.New("Insufficient Storage")            // 507
+	LoopDetectedWithUrgency                  = errors.New("Loop Detected")                   // 508
+	NotExtendedWithUrgency                   = errors.New("Not Extended")                    // 510
+	NetworkAuthenticationRequiredWithUrgency = errors.New("Network Authentication Required") // 511
 )
 
 // get message for client
@@ -79,100 +91,5 @@ func (e Err) Output() error {
 		return errors.New(e.msgForClient)
 	}
 
-	return e.error()
-}
-
-func (e Err) error() error {
-	switch e.Flag {
-	case FlagBadRequest:
-		return BadRequest
-	case FlagUserDoesNotExist:
-		return UserDoesNotExist
-	case FlagInvalidToken:
-		return InvalidToken
-	case FlagPasswordNotMatch:
-		return PasswordNotMatch
-	case FlagExpired:
-		return Expired
-	case FlagUnauthorized:
-		return Unauthorized
-	case FlagPaymentRequired:
-		return PaymentRequired
-	case FlagForbidden:
-		return Forbidden
-	case FlagNotFound:
-		return NotFound
-	case FlagMethodNotAllowed:
-		return MethodNotAllowed
-	case FlagNotAcceptable:
-		return NotAcceptable
-	case FlagProxyAuthenticationRequired:
-		return NetworkAuthenticationRequired
-	case FlagConflict:
-		return Conflict
-	case FlagGone:
-		return Gone
-	case FlagLengthRequired:
-		return LengthRequired
-	case FlagPreconditionField:
-		return PreconditionField
-	case FlagPayloadTooLarge:
-		return PayloadTooLarge
-	case FlagURITooLong:
-		return URITooLong
-	case FlagUnsupportedMediaType:
-		return UnsupportedMediaType
-	case FlagRangeNotSatisfiable:
-		return RangeNotSatisfiable
-	case FlagExpectationFailed:
-		return ExpectationFailed
-	case FlagIAmTeaPot:
-		return IAmATeaPot
-	case FlagMisdirectedRequest:
-		return MisdirectedRequest
-	case FlagUnprocessableEntity:
-		return UnprocessableEntity
-	case FlagLocked:
-		return Locked
-	case FlagFailedDependency:
-		return FailedDependency
-	case FlagTooEarly:
-		return TooEarly
-	case FlagUpgradeRequire:
-		return UpgradeRequire
-	case FlagPreconditionRequired:
-		return PreconditionRequired
-	case FlagTooManyRequests:
-		return TooManyRequests
-	case FlagRequestHeaderFieldsTooLarge:
-		return RequestHeaderFieldsTooLarge
-	case FlagUnavailableLegalReasons:
-		return UnavailableForLegalReasons
-
-	case FlagInternalServerError:
-		return IntervalServerError
-	case FlagBadGateway:
-		return BadGateway
-	case FlagServiceUnavailable:
-		return ServiceUnavailable
-	case FlagGatewayTimeout:
-		return GatewayTimeout
-	case FlagHTTPVersionNotSupported:
-		return HTTPVersionNotSupported
-	case FlagVariantAlsoNegotiates:
-		return VariantAlsoNegotiates
-	case FlagInsufficientStorage:
-		return InsufficientStorage
-	case FlagLoopDetected:
-		return LoopDetected
-	case FlagNotExtended:
-		return NotExtended
-	case FlagNetworkAuthenticationRequired:
-		return NetworkAuthenticationRequired
-
-	case FlagInternalServerErrorWithUrgency:
-		return IntervalServerError
-	default:
-		return IntervalServerError
-	}
+	return e.As
 }
