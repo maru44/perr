@@ -151,7 +151,7 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 
 	var out string
 	if len(msgForClient) > 0 {
-		out = strings.Join(msgForClient, ".")
+		out = strings.Join(msgForClient, "\n")
 	}
 
 	return &Err{
@@ -189,7 +189,7 @@ func WrapWithLevel(cause error, as error, level ErrLevel, msgForClient ...string
 
 	var out string
 	if len(msgForClient) > 0 {
-		out = strings.Join(msgForClient, ".")
+		out = strings.Join(msgForClient, "\n")
 	}
 
 	return &Err{
