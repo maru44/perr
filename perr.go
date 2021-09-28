@@ -85,8 +85,8 @@ func (e Err) Traces() StackTraces {
 func (e Err) Map() *ErrDict {
 	return &ErrDict{
 		Error:           e.Unwrap(),
-		TreatedAs:       e.Output(),
-		MsgForDeveloper: e.Error(),
+		TreatedAs:       e.As,
+		MsgForDeveloper: e.msgForDeveloper,
 		MsgForClient:    e.Output().Error(),
 		Level:           string(e.Level),
 		Traces:          e.traces,
