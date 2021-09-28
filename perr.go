@@ -45,7 +45,7 @@ type (
 
 	errDictJson struct {
 		Error           string      `json:"error"`
-		TreatedAs       string      `json:"teated_as"`
+		TreatedAs       string      `json:"treated_as"`
 		MsgForDeveloper string      `json:"msg_for_developer"`
 		MsgForClient    string      `json:"msg_for_client"`
 		Level           string      `json:"level"`

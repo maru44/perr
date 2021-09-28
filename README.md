@@ -2,7 +2,7 @@
 Perr gives error persona and enrich error.<br/>
 You can handle error properly, safely and easily with perr.
 
-## purpose
+## Purpose
 I make this library for the following reasons.
 
 ### main purpose
@@ -19,7 +19,7 @@ For example, `dial tcp 127.0.0.1:3306: connect: connection refused` must not be 
 - `Is()` method and `Level` make it easy to handle error.<br/>
 - You can trace error with `Trace()` method.
 
-## How to use perr.
+## How to use
 
 Here's sample.
 https://github.com/maru44/perr/tree/master/samples
@@ -123,7 +123,7 @@ func main() {
 	// &{I'm a teapot Don't pour coffee! Someone pour coffee into tea cup. Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
 	//  2021-09-28 21:37:06.7194034 +0900 JST m=+0.000158501}
 	// json:
-	// {"error":"I'm a teapot","teated_as":"Don't pour coffee!","msg_for_developer":"Someone pour coffee into tea cup.","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4886631}],"occured_at":"2021-09-28T21:37:06.7194034+09:00"}
+	// {"error":"I'm a teapot","treated_as":"Don't pour coffee!","msg_for_developer":"Someone pour coffee into tea cup.","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4886631}],"occured_at":"2021-09-28T21:37:06.7194034+09:00"}
 }
 
 ```
