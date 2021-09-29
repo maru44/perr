@@ -120,13 +120,18 @@ func New(errString string, as error, msgForClient ...string) *Err {
 
 	var cause error
 	if errString != "" {
+		// if not blank
 		cause = errors.New(errString)
+
+		if as == nil {
+			as = cause
+		}
 	} else {
 		cause = as
 	}
 
-	if as == nil {
-		as = cause
+	if cause == nil {
+		return nil
 	}
 
 	return &Err{
