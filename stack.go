@@ -8,13 +8,13 @@ import (
 )
 
 type (
-	PerrStack interface {
+	perrStack interface {
 		String() string
 	}
 
-	StackTraces []StackTrace
+	stackTraces []stackTrace
 
-	StackTrace struct {
+	stackTrace struct {
 		File           string  `json:"file"`
 		Line           int     `json:"line"`
 		Name           string  `json:"name"`
@@ -25,7 +25,7 @@ type (
 /* traces method */
 
 // output stacktace for string
-func (ss StackTraces) String() string {
+func (ss stackTraces) String() string {
 	var buf bytes.Buffer
 	for _, s := range ss {
 		fmt.Fprintf(&buf, "%s:%d ===> %v\n", s.File, s.Line, s.Name)
@@ -43,11 +43,11 @@ func callers() []uintptr {
 	return pcs[0 : n-2]
 }
 
-func newTrace(pcs []uintptr) StackTraces {
-	traces := make([]StackTrace, len(pcs))
+func newTrace(pcs []uintptr) stackTraces {
+	traces := make([]stackTrace, len(pcs))
 
 	for i, pc := range pcs {
-		trace := StackTrace{ProgramCounter: pc}
+		trace := stackTrace{ProgramCounter: pc}
 		fn := runtime.FuncForPC(pc)
 		if fn == nil {
 			return traces

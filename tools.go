@@ -1,6 +1,6 @@
 package perr
 
-// whether is perror or not
+// "IsPerror" is function whether perror or not
 func IsPerror(err error) bool {
 	_, ok := err.(Perror)
 	return ok

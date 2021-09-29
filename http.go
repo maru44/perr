@@ -5,7 +5,7 @@ import "errors"
 var (
 	/* success */
 
-	OK                          = errors.New("OK")                            // 200
+	Ok                          = errors.New("OK")                            // 200
 	Created                     = errors.New("Created")                       // 201
 	Accepted                    = errors.New("Accepted")                      // 202
 	NonAuthoritativeInformation = errors.New("Non-Authoritative Information") // 203

@@ -1,10 +1,9 @@
 package perr
 
+// "ErrLevel" show error level
 type ErrLevel string
 
 const (
-	/* error level */
-
 	// internal with urgency
 	ErrLevelAlert ErrLevel = "ALERT"
 	// internal nwithout urgency

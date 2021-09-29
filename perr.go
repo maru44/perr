@@ -12,7 +12,7 @@ type (
 		// error for client or response
 		Output() error
 		// get stacktrace
-		Traces() PerrStack
+		Traces() perrStack
 		// output ErrDict
 		Map() *ErrDict
 		// ErrDict >> json
@@ -28,8 +28,8 @@ type (
 		as           error
 		Level        ErrLevel
 		msgForClient string
-		traces       StackTraces
-		occuredAt    time.Time
+		traces       stackTraces
+		occurredAt   time.Time
 	}
 
 	ErrDict struct {
@@ -37,8 +37,8 @@ type (
 		TreatedAs    error
 		MsgForClient string
 		Level        string
-		Traces       StackTraces
-		OccuredAt    time.Time
+		Traces       stackTraces
+		OccurredAt   time.Time
 	}
 
 	errDictJson struct {
@@ -46,8 +46,8 @@ type (
 		TreatedAs    string      `json:"treated_as"`
 		MsgForClient string      `json:"msg_for_client"`
 		Level        string      `json:"level"`
-		Traces       StackTraces `json:"traces"`
-		OccuredAt    time.Time   `json:"occured_at"`
+		Traces       stackTraces `json:"traces"`
+		OccurredAt   time.Time   `json:"occurred_at"`
 	}
 )
 
@@ -67,7 +67,7 @@ func (e Err) Output() error {
 }
 
 // get stacktrace of Perror
-func (e Err) Traces() StackTraces {
+func (e Err) Traces() stackTraces {
 	return e.traces
 }
 
@@ -79,7 +79,7 @@ func (e Err) Map() *ErrDict {
 		MsgForClient: e.Output().Error(),
 		Level:        string(e.Level),
 		Traces:       e.traces,
-		OccuredAt:    e.occuredAt,
+		OccurredAt:   e.occurredAt,
 	}
 }
 
@@ -92,7 +92,7 @@ func (e Err) Json() []byte {
 		MsgForClient: m.MsgForClient,
 		Level:        m.Level,
 		Traces:       m.Traces,
-		OccuredAt:    m.OccuredAt,
+		OccurredAt:   m.OccurredAt,
 	}
 	json_, err := json.Marshal(j)
 	if err != nil {
@@ -139,7 +139,7 @@ func New(errString string, as error, msgForClient ...string) *Err {
 		as:           as,
 		Level:        getErrLevel(as),
 		msgForClient: out,
-		occuredAt:    time.Now(),
+		occurredAt:   time.Now(),
 		traces:       newTrace(callers()),
 	}
 }
@@ -164,7 +164,7 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 		Level:        getErrLevel(as),
 		as:           as,
 		msgForClient: out,
-		occuredAt:    time.Now(),
+		occurredAt:   time.Now(),
 		traces:       newTrace(callers()),
 	}
 }
