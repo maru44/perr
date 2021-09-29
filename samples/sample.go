@@ -93,8 +93,8 @@ func main() {
 
 	// output >>
 	// 	map:
-	// &{Someone pour coffee into tea cup. I'm a teapot  Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
+	// &{Someone pour coffee into tea cup. I'm a teapot Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
 	//  2021-09-29 18:52:04.1909594 +0900 JST m=+0.000143801}
 	// json:
-	// {"error":"Someone pour coffee into tea cup.","treated_as":"I'm a teapot","msg_for_developer":"","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4885497}],"occured_at":"2021-09-29T18:52:04.1909594+09:00"}
+	// {"error":"Someone pour coffee into tea cup.","treated_as":"I'm a teapot","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4885497}],"occured_at":"2021-09-29T18:52:04.1909594+09:00"}
 }
