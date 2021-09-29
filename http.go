@@ -1,6 +1,6 @@
 package perr
 
-import "github.com/pkg/errors"
+import "errors"
 
 var (
 	/* success */
