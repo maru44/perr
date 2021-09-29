@@ -128,6 +128,10 @@ func New(errString string, as error, msgForClient ...string) *Err {
 		cause = as
 	}
 
+	if as == nil {
+		as = cause
+	}
+
 	return &Err{
 		cause:        cause,
 		As:           as,
@@ -147,6 +151,10 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 	var out string
 	if len(msgForClient) > 0 {
 		out = strings.Join(msgForClient, "\n")
+	}
+
+	if as == nil {
+		as = cause
 	}
 
 	return &Err{
