@@ -25,31 +25,29 @@ type (
 
 	Err struct {
 		cause        error
-		As           error
+		as           error
 		Level        ErrLevel
-		OccuredAt    time.Time
 		msgForClient string
 		traces       StackTraces
+		occuredAt    time.Time
 	}
 
 	ErrDict struct {
-		Error           error
-		TreatedAs       error
-		MsgForDeveloper string
-		MsgForClient    string
-		Level           string
-		Traces          StackTraces
-		OccuredAt       time.Time
+		Error        error
+		TreatedAs    error
+		MsgForClient string
+		Level        string
+		Traces       StackTraces
+		OccuredAt    time.Time
 	}
 
 	errDictJson struct {
-		Error           string      `json:"error"`
-		TreatedAs       string      `json:"treated_as"`
-		MsgForDeveloper string      `json:"msg_for_developer"`
-		MsgForClient    string      `json:"msg_for_client"`
-		Level           string      `json:"level"`
-		Traces          StackTraces `json:"traces"`
-		OccuredAt       time.Time   `json:"occured_at"`
+		Error        string      `json:"error"`
+		TreatedAs    string      `json:"treated_as"`
+		MsgForClient string      `json:"msg_for_client"`
+		Level        string      `json:"level"`
+		Traces       StackTraces `json:"traces"`
+		OccuredAt    time.Time   `json:"occured_at"`
 	}
 )
 
@@ -65,7 +63,7 @@ func (e Err) Output() error {
 		return errors.New(e.msgForClient)
 	}
 
-	return e.As
+	return e.as
 }
 
 // get stacktrace of Perror
@@ -77,11 +75,11 @@ func (e Err) Traces() StackTraces {
 func (e Err) Map() *ErrDict {
 	return &ErrDict{
 		Error:        e.Unwrap(),
-		TreatedAs:    e.As,
+		TreatedAs:    e.as,
 		MsgForClient: e.Output().Error(),
 		Level:        string(e.Level),
 		Traces:       e.traces,
-		OccuredAt:    e.OccuredAt,
+		OccuredAt:    e.occuredAt,
 	}
 }
 
@@ -89,13 +87,12 @@ func (e Err) Map() *ErrDict {
 func (e Err) Json() []byte {
 	m := e.Map()
 	j := errDictJson{
-		Error:           m.Error.Error(),
-		TreatedAs:       m.TreatedAs.Error(),
-		MsgForDeveloper: m.MsgForDeveloper,
-		MsgForClient:    m.MsgForClient,
-		Level:           m.Level,
-		Traces:          m.Traces,
-		OccuredAt:       m.OccuredAt,
+		Error:        m.Error.Error(),
+		TreatedAs:    m.TreatedAs.Error(),
+		MsgForClient: m.MsgForClient,
+		Level:        m.Level,
+		Traces:       m.Traces,
+		OccuredAt:    m.OccuredAt,
 	}
 	json_, err := json.Marshal(j)
 	if err != nil {
@@ -134,10 +131,10 @@ func New(errString string, as error, msgForClient ...string) *Err {
 
 	return &Err{
 		cause:        cause,
-		As:           as,
+		as:           as,
 		Level:        getErrLevel(as),
 		msgForClient: out,
-		OccuredAt:    time.Now(),
+		occuredAt:    time.Now(),
 		traces:       newTrace(callers()),
 	}
 }
@@ -160,9 +157,9 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 	return &Err{
 		cause:        cause,
 		Level:        getErrLevel(as),
-		As:           as,
+		as:           as,
 		msgForClient: out,
-		OccuredAt:    time.Now(),
+		occuredAt:    time.Now(),
 		traces:       newTrace(callers()),
 	}
 }
