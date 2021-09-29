@@ -3,7 +3,6 @@ package perr
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -25,13 +24,12 @@ type (
 	}
 
 	Err struct {
-		cause           error
-		As              error
-		Level           ErrLevel
-		OccuredAt       time.Time
-		msgForDeveloper string
-		msgForClient    string
-		traces          StackTraces
+		cause        error
+		As           error
+		Level        ErrLevel
+		OccuredAt    time.Time
+		msgForClient string
+		traces       StackTraces
 	}
 
 	ErrDict struct {
@@ -58,13 +56,7 @@ type (
 // get message for developer
 // this method is for debug
 func (e Err) Error() string {
-	if e.cause != nil {
-		return e.cause.Error()
-	} else if e.msgForDeveloper != "" {
-		return fmt.Sprintf("%s: %s", e.As.Error(), e.msgForDeveloper)
-	} else {
-		return e.As.Error()
-	}
+	return e.cause.Error()
 }
 
 // get message for client
@@ -84,16 +76,16 @@ func (e Err) Traces() StackTraces {
 // Convert Perror To ErrDict pointer
 func (e Err) Map() *ErrDict {
 	return &ErrDict{
-		Error:           e.Unwrap(),
-		TreatedAs:       e.As,
-		MsgForDeveloper: e.msgForDeveloper,
-		MsgForClient:    e.Output().Error(),
-		Level:           string(e.Level),
-		Traces:          e.traces,
-		OccuredAt:       e.OccuredAt,
+		Error:        e.Unwrap(),
+		TreatedAs:    e.As,
+		MsgForClient: e.Output().Error(),
+		Level:        string(e.Level),
+		Traces:       e.traces,
+		OccuredAt:    e.OccuredAt,
 	}
 }
 
+// Convert Perror TO Json
 func (e Err) Json() []byte {
 	m := e.Map()
 	j := errDictJson{
@@ -114,11 +106,7 @@ func (e Err) Json() []byte {
 
 // get cause of Perror
 func (e Err) Unwrap() error {
-	if e.cause != nil {
-		return e.cause
-	} else {
-		return e.As
-	}
+	return e.cause
 }
 
 // whether Perror is caused by target
@@ -127,19 +115,26 @@ func (e Err) Is(target error) bool { return errors.Is(e.Unwrap(), target) }
 /* initialize perr */
 
 // initialize Perror
-func New(msgForDeveloper string, as error, msgForClient ...string) *Err {
+func New(errString string, as error, msgForClient ...string) *Err {
 	var out string
-	if len(msgForDeveloper) > 0 {
+	if len(msgForClient) > 0 {
 		out = strings.Join(msgForClient, "\n")
 	}
 
+	var cause error
+	if errString != "" {
+		cause = errors.New(errString)
+	} else {
+		cause = as
+	}
+
 	return &Err{
-		As:              as,
-		Level:           getErrLevel(as),
-		msgForDeveloper: msgForDeveloper,
-		msgForClient:    out,
-		OccuredAt:       time.Now(),
-		traces:          NewTrace(callers()),
+		cause:        cause,
+		As:           as,
+		Level:        getErrLevel(as),
+		msgForClient: out,
+		OccuredAt:    time.Now(),
+		traces:       newTrace(callers()),
 	}
 }
 
@@ -160,44 +155,20 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 		As:           as,
 		msgForClient: out,
 		OccuredAt:    time.Now(),
-		traces:       NewTrace(callers()),
+		traces:       newTrace(callers()),
 	}
 }
 
 // initialize Perror with level
-func NewWithLevel(msgForDeveloper string, as error, level ErrLevel, msgForClient ...string) *Err {
-	var out string
-	if len(msgForDeveloper) > 0 {
-		out = strings.Join(msgForClient, "\n")
-	}
-
-	return &Err{
-		As:              as,
-		Level:           level,
-		msgForDeveloper: msgForDeveloper,
-		msgForClient:    out,
-		OccuredAt:       time.Now(),
-		traces:          NewTrace(callers()),
-	}
+func NewWithLevel(errString string, as error, level ErrLevel, msgForClient ...string) *Err {
+	p := New(errString, as, msgForClient...)
+	p.Level = level
+	return p
 }
 
 // wrap error and initialize Perror with Level
 func WrapWithLevel(cause error, as error, level ErrLevel, msgForClient ...string) *Err {
-	if cause == nil {
-		return nil
-	}
-
-	var out string
-	if len(msgForClient) > 0 {
-		out = strings.Join(msgForClient, "\n")
-	}
-
-	return &Err{
-		cause:        cause,
-		Level:        level,
-		As:           as,
-		msgForClient: out,
-		OccuredAt:    time.Now(),
-		traces:       NewTrace(callers()),
-	}
+	p := Wrap(cause, as, msgForClient...)
+	p.Level = level
+	return p
 }

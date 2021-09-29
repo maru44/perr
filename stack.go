@@ -24,6 +24,7 @@ type (
 
 /* traces method */
 
+// output stacktace for string
 func (ss StackTraces) String() string {
 	var buf bytes.Buffer
 	for _, s := range ss {
@@ -42,7 +43,7 @@ func callers() []uintptr {
 	return pcs[0 : n-2]
 }
 
-func NewTrace(pcs []uintptr) StackTraces {
+func newTrace(pcs []uintptr) StackTraces {
 	traces := make([]StackTrace, len(pcs))
 
 	for i, pc := range pcs {
