@@ -8,10 +8,6 @@ import (
 )
 
 type (
-	perrStack interface {
-		String() string
-	}
-
 	stackTraces []stackTrace
 
 	stackTrace struct {

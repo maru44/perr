@@ -12,7 +12,7 @@ type (
 		// error for client or response
 		Output() error
 		// get stacktrace
-		Traces() perrStack
+		Traces() stackTraces
 		// output ErrDict
 		Map() *ErrDict
 		// ErrDict >> json
