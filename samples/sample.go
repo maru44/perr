@@ -46,12 +46,12 @@ func main() {
 	/* =================== Level =================== */
 	fmt.Println("\n=================== Level ===================")
 	sample4 := perr.New("dangerous", perr.InternalServerErrorWithUrgency)
-	fmt.Println(sample4.Level)
+	fmt.Println(sample4.Level())
 	sample5 := perr.New("not dangerous but system error", perr.InternalServerError)
-	fmt.Println(sample5.Level)
+	fmt.Println(sample5.Level())
 	sample6 := perr.New("caused by client", perr.BadRequest)
-	fmt.Println(sample6.Level)
-	fmt.Println(sample0.Level)
+	fmt.Println(sample6.Level())
+	fmt.Println(sample0.Level())
 
 	// output >>
 	// ALERT
@@ -63,7 +63,7 @@ func main() {
 	fmt.Println("\n=================== with level ===================")
 	myLevel := perr.ErrLevel("My Level")
 	sample7 := perr.NewWithLevel("this is my level", perr.IAmATeaPot, myLevel)
-	fmt.Println(sample7.Level)
+	fmt.Println(sample7.Level())
 
 	// output >>
 	// My Level

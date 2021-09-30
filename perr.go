@@ -11,6 +11,8 @@ type (
 	Perror interface {
 		// error for client or response
 		Output() error
+		// get level
+		Level() ErrLevel
 		// get stacktrace
 		Traces() stackTraces
 		// output ErrDict
@@ -26,7 +28,7 @@ type (
 	Err struct {
 		cause        error
 		as           error
-		Level        ErrLevel
+		level        ErrLevel
 		msgForClient string
 		traces       stackTraces
 		occurredAt   time.Time
@@ -66,6 +68,10 @@ func (e Err) Output() error {
 	return e.as
 }
 
+func (e Err) Level() ErrLevel {
+	return e.level
+}
+
 // get stacktrace of Perror
 func (e Err) Traces() stackTraces {
 	return e.traces
@@ -77,7 +83,7 @@ func (e Err) Map() *ErrDict {
 		Error:        e.Unwrap(),
 		TreatedAs:    e.as,
 		MsgForClient: e.Output().Error(),
-		Level:        string(e.Level),
+		Level:        string(e.level),
 		Traces:       e.traces,
 		OccurredAt:   e.occurredAt,
 	}
@@ -137,7 +143,7 @@ func New(errString string, as error, msgForClient ...string) *Err {
 	return &Err{
 		cause:        cause,
 		as:           as,
-		Level:        getErrLevel(as),
+		level:        getErrLevel(as),
 		msgForClient: out,
 		occurredAt:   time.Now(),
 		traces:       newTrace(callers()),
@@ -161,7 +167,7 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 
 	return &Err{
 		cause:        cause,
-		Level:        getErrLevel(as),
+		level:        getErrLevel(as),
 		as:           as,
 		msgForClient: out,
 		occurredAt:   time.Now(),
@@ -172,13 +178,13 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 // initialize Perror with level
 func NewWithLevel(errString string, as error, level ErrLevel, msgForClient ...string) *Err {
 	p := New(errString, as, msgForClient...)
-	p.Level = level
+	p.level = level
 	return p
 }
 
 // wrap error and initialize Perror with Level
 func WrapWithLevel(cause error, as error, level ErrLevel, msgForClient ...string) *Err {
 	p := Wrap(cause, as, msgForClient...)
-	p.Level = level
+	p.level = level
 	return p
 }
