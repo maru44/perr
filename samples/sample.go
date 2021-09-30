@@ -92,12 +92,33 @@ func main() {
 	fmt.Printf("json:\n%v\n\n", string(json_))
 
 	// output >>
-	// 	map:
+	// map:
 	// &{Someone pour coffee into tea cup. I'm a teapot Don't pour coffee! EXTERNAL ERROR /secret/perr/samples/sample.go:31 ===> main
 	//  2021-09-29 18:52:04.1909594 +0900 JST m=+0.000143801}
 	// json:
 	// {"error":"Someone pour coffee into tea cup.","treated_as":"I'm a teapot","msg_for_client":"Don't pour coffee!","level":"EXTERNAL ERROR","traces":[{"file":"/secret/perr/samples/sample.go","line":31,"name":"main","program_counter":4885497}],"occured_at":"2021-09-29T18:52:04.1909594+09:00"}
 
+	/* =================== judge is Perror =================== */
 	fmt.Println(perr.IsPerror(err))
-	fmt.Println(perr.IsPerror(sample0))
+	p0, ok := perr.IsPerror(sample0)
+
+	fmt.Println(ok)
+	fmt.Println(string(p0.Json()))
+
+	// output >>
+	// <nil> false
+	// true
+	// {"error":"strconv.Atoi: parsing \"sample\": invalid syntax","treated_as":"Bad Request","msg_for_client":"Bad Request","level":"EXTERNAL ERROR","traces":[{"file":"/home/takumaru/codes/perr/samples/sample.go","line":15,"name":"main","program_counter":4880005,"layer":0}],"occurred_at":"2021-09-30T21:22:47.9695069+09:00"}
+
+	over1 := perr.Wrap(sample0, nil)
+	fmt.Println(over1.Traces())
+	fmt.Printf("%d ---> Layer is %d", over1.Traces()[0].Line, over1.Traces()[0].Layer)
+	fmt.Printf("\n%d ---> Layer is %d\n", over1.Traces()[1].Line, over1.Traces()[1].Layer)
+
+	// output >>
+	// /home/takumaru/codes/perr/samples/sample.go:15 ===> main
+	//        /home/takumaru/codes/perr/samples/sample.go:110 ===> main
+	//
+	// 15 ---> Layer is 0
+	// 110 ---> Layer is 1
 }

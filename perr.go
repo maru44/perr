@@ -68,6 +68,7 @@ func (e Err) Output() error {
 	return e.as
 }
 
+// Get level
 func (e Err) Level() ErrLevel {
 	return e.level
 }
@@ -150,19 +151,38 @@ func New(errString string, as error, msgForClient ...string) *Err {
 	}
 }
 
-// wrap error and initialize Perror
+// "Wrap" function wrap error and initialize *perr.Err.
+// If `cause` is nil return nil.
+// if as is nil, error for client will be `cause`.
 func Wrap(cause error, as error, msgForClient ...string) *Err {
 	if cause == nil {
 		return nil
 	}
 
 	var out string
-	if len(msgForClient) > 0 {
-		out = strings.Join(msgForClient, "\n")
+	var traces stackTraces
+	if perror, ok := cause.(Perror); ok {
+		as = perror.Unwrap()
+		traces = perror.Traces()
+		max := traces.maxLayer()
+		// for _, t := range newTrace(callers()) {
+		// 	t.Layer = max
+		// 	traces = append(traces, t)
+		// }
+
+		t := newTrace(callers())[0]
+		t.Layer = max + 1
+		traces = append(traces, t)
+	} else {
+		if as == nil {
+			as = cause
+		}
+		traces = newTrace(callers())
 	}
 
-	if as == nil {
-		as = cause
+	// overwrite msgForClient
+	if len(msgForClient) > 0 {
+		out = strings.Join(msgForClient, "\n")
 	}
 
 	return &Err{
@@ -171,7 +191,7 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 		as:           as,
 		msgForClient: out,
 		occurredAt:   time.Now(),
-		traces:       newTrace(callers()),
+		traces:       traces,
 	}
 }
 

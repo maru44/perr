@@ -15,6 +15,9 @@ type (
 		Line           int     `json:"line"`
 		Name           string  `json:"name"`
 		ProgramCounter uintptr `json:"program_counter"`
+		// cause will be 0
+		// Every time you stack perr.Wrap Layer will be increased by 1.
+		Layer int `json:"layer"`
 	}
 )
 
@@ -24,9 +27,19 @@ type (
 func (ss stackTraces) String() string {
 	var buf bytes.Buffer
 	for _, s := range ss {
-		fmt.Fprintf(&buf, "%s:%d ===> %v\n", s.File, s.Line, s.Name)
+		fmt.Fprintf(&buf, "%s%s:%d ===> %v\n", strings.Repeat("\t", s.Layer), s.File, s.Line, s.Name)
 	}
 	return buf.String()
+}
+
+// getMaxLayer
+func (ss stackTraces) maxLayer() (max int) {
+	for _, s := range ss {
+		if s.Layer > max {
+			max = s.Layer
+		}
+	}
+	return max
 }
 
 /* init trace */

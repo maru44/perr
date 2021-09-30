@@ -1,9 +1,13 @@
 package perr
 
-// "IsPerror" is function whether perror or not
-func IsPerror(err error) bool {
-	_, ok := err.(Perror)
-	return ok
+// "IsPerror" is function reveal whether Perror or not.
+// If Perror, return Perror and true.
+// If not Perror, return nil and false.
+func IsPerror(err error) (Perror, bool) {
+	if perror, ok := err.(Perror); ok {
+		return perror, ok
+	}
+	return nil, false
 }
 
 // get level by as
