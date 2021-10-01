@@ -3,6 +3,7 @@ package perr
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -174,16 +175,27 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 		t := newTrace(callers())[0]
 		t.Layer = max + 1
 		traces = append(traces, t)
+
+		out = perror.Map().MsgForClient
+		if out != "" {
+			if len(msgForClient) > 0 {
+				out += fmt.Sprintf("\n%s", strings.Join(msgForClient, "\n"))
+			} else {
+				out += strings.Join(msgForClient, "\n")
+			}
+		} else {
+			out = strings.Join(msgForClient, "\n")
+		}
 	} else {
 		if as == nil {
 			as = cause
 		}
 		traces = newTrace(callers())
-	}
 
-	// overwrite msgForClient
-	if len(msgForClient) > 0 {
-		out = strings.Join(msgForClient, "\n")
+		// overwrite msgForClient
+		if len(msgForClient) > 0 {
+			out = strings.Join(msgForClient, "\n")
+		}
 	}
 
 	return &Err{
