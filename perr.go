@@ -155,16 +155,13 @@ func New(errString string, as error, msgForClient ...string) *Err {
 // If `cause` is nil return nil.
 // if as is nil, error for client will be `cause`.
 func Wrap(cause error, as error, msgForClient ...string) *Err {
-	if cause == nil {
+	if cause == nil || reflect.ValueOf(cause).IsNil() {
 		return nil
 	}
 
 	var out string
 	var traces stackTraces
 	if perror, ok := cause.(Perror); ok {
-		if perror == nil {
-			return nil
-		}
 		as = perror.Output()
 		traces = perror.Traces()
 		max := traces.maxLayer()
