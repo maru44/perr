@@ -162,7 +162,7 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 	var out string
 	var traces stackTraces
 	if perror, ok := cause.(Perror); ok {
-		as = perror.Unwrap()
+		as = perror.Output()
 		traces = perror.Traces()
 		max := traces.maxLayer()
 		// for _, t := range newTrace(callers()) {
