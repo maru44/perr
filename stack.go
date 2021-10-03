@@ -16,7 +16,7 @@ type (
 		Name           string  `json:"name"`
 		ProgramCounter uintptr `json:"program_counter"`
 		// cause will be 0
-		// Every time you stack perr.Wrap Layer will be increased by 1.
+		// Every time you stack perr, this value will be increased by 1.
 		Layer int `json:"layer"`
 	}
 )
