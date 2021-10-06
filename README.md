@@ -21,6 +21,6 @@ For example, `dial tcp 127.0.0.1:3306: connect: connection refused` must not be 
 
 ## How to use
 
-Here's sample.
+Here's more sample.
 https://github.com/maru44/perr/tree/master/samples
 
