@@ -1,5 +1,7 @@
 package perr
 
+import "reflect"
+
 // "IsPerror" is function reveal whether Perror or not.
 // If Perror, return Perror and true.
 // If not Perror, return nil and false.
@@ -8,6 +10,13 @@ func IsPerror(err error) (Perror, bool) {
 		return perror, ok
 	}
 	return nil, false
+}
+
+func IsNoError(err error) bool {
+	if err == nil || reflect.ValueOf(err).IsNil() {
+		return true
+	}
+	return false
 }
 
 // get level by as
