@@ -74,8 +74,14 @@ func main() {
 	fmt.Println("client: ", p.Output())
 	
 	p2 := perr.New("", perr.IAmATeaPot)
-	fmt.Println("developer: ", p2)
+	fmt.Println("\ndeveloper: ", p2)
 }
+
+/* output */
+// developer:  Someone pour coffee
+// client:  I'm a teapot
+
+// developer:  I'm a teapot
 
 ```
 
