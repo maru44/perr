@@ -87,20 +87,24 @@ func TestWrapPerr(t *testing.T) {
 			}
 
 			if ps[9] != nil && !reflect.ValueOf(ps[9]).IsNil() {
+				// whether error for developer is wrapped correctly
 				if tt.perrErr.Error() != ps[9].Error() {
 					t.Errorf("want: %v\ngot: %v", tt.perrErr, ps[9].Unwrap())
 				}
 				// if tt.outAs != ps[9].as {
 				// 	t.Errorf("want: %v\ngot: %v", tt.outAs, ps[9].as)
 				// }
+
+				// whether output message is wrapped correctly (under condition with msgForClient)
 				if tt.lastMsgForClient != ps[9].Output().Error() {
 					t.Errorf("want: %v\ngot: %v", tt.lastMsgForClient, ps[9].Output())
 				}
 				if ps[9].Traces().maxLayer() != 9 {
 					t.Errorf("want: %v\ngot: %v", 9, ps[9].Traces().maxLayer())
 				}
-				if tt.lastMsgForClient != ps[9].msgForClient {
-					t.Errorf("want: %v\ngot: %v", tt.lastMsgForClient, ps[9].msgForClient)
+				// whether output error is wrapped correctly (under condition witout msgForClient)
+				if !ps[9].IsOutput(tt.outAs) {
+					t.Errorf("want: %v\ngot: %v", tt.outAs, ps[9].as)
 				}
 			} else {
 				if ps[9] != nil || !reflect.ValueOf(ps[9]).IsNil() {

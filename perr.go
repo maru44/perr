@@ -25,6 +25,10 @@ type (
 		Unwrap() error
 		// whether Perror is caused by target
 		Is(target error) bool
+		// whether Perror output target
+		IsOutput(target error) bool
+		// get message direct
+		getMsgForClient() string
 	}
 
 	Err struct {
@@ -118,6 +122,13 @@ func (e Err) Unwrap() error {
 // whether Perror is caused by target
 func (e Err) Is(target error) bool { return errors.Is(e.Unwrap(), target) }
 
+// whether Perror output target
+func (e Err) IsOutput(target error) bool { return errors.Is(e.as, target) }
+
+func (e Err) getMsgForClient() string {
+	return e.msgForClient
+}
+
 /* initialize perr */
 
 // initialize Perror
@@ -164,19 +175,15 @@ func Wrap(cause error, as error, msgForClient ...string) *Err {
 	var out string
 	var traces stackTraces
 	if perror, ok := cause.(Perror); ok {
-		as = perror.Output()
+		as = perror.Map().TreatedAs
 		traces = perror.Traces()
 		max := traces.maxLayer()
-		// for _, t := range newTrace(callers()) {
-		// 	t.Layer = max
-		// 	traces = append(traces, t)
-		// }
 
 		t := newTrace(callers())[0]
 		t.Layer = max + 1
 		traces = append(traces, t)
 
-		out = perror.Map().MsgForClient
+		out = perror.getMsgForClient()
 		if out != "" {
 			if len(msgForClient) > 0 {
 				out += fmt.Sprintf("\n%s", strings.Join(msgForClient, "\n"))
