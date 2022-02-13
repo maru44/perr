@@ -23,14 +23,14 @@ func IsNoError(err error) bool {
 func getErrLevel(as error) ErrLevel {
 	var l ErrLevel
 	switch as {
-	case InternalServerErrorWithUrgency, NotExtendedWithUrgency, BadGatewayWithUrgency,
-		ServiceUnavailableWithUrgency, GatewayTimeoutWithUrgency, HTTPVersionNotSupportedWithUrgency,
-		VariantAlsoNegotiatesWithUrgency, InsufficientStorageWithUrgency, LoopDetectedWithUrgency,
-		NotExtendedWithUrgency, NetworkAuthenticationRequiredWithUrgency:
+	case ErrInternalServerErrorWithUrgency, ErrNotExtendedWithUrgency, ErrBadGatewayWithUrgency,
+		ErrServiceUnavailableWithUrgency, ErrGatewayTimeoutWithUrgency, ErrHTTPVersionNotSupportedWithUrgency,
+		ErrVariantAlsoNegotiatesWithUrgency, ErrInsufficientStorageWithUrgency, ErrLoopDetectedWithUrgency,
+		ErrNotExtendedWithUrgency, ErrNetworkAuthenticationRequiredWithUrgency:
 		l = ErrLevelAlert
-	case InternalServerError, NotImplemented, BadGateway, ServiceUnavailable,
-		GatewayTimeout, HTTPVersionNotSupported, VariantAlsoNegotiates,
-		InsufficientStorage, LoopDetected, NotExtended, NetworkAuthenticationRequired:
+	case ErrInternalServerError, ErrNotImplemented, ErrBadGateway, ErrServiceUnavailable,
+		ErrGatewayTimeout, ErrHTTPVersionNotSupported, ErrVariantAlsoNegotiates,
+		ErrInsufficientStorage, ErrLoopDetected, ErrNotExtended, ErrNetworkAuthenticationRequired:
 		l = ErrLevelInternal
 	default:
 		l = ErrLevelExternal

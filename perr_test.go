@@ -21,15 +21,15 @@ var (
 	}{
 		{
 			errors.New("test01"),
-			BadRequest,
+			ErrBadRequest,
 			nil,
 			errors.New("test01"),
-			BadRequest,
-			BadRequest.Error(),
+			ErrBadRequest,
+			ErrBadRequest.Error(),
 		},
 		{
 			nil,
-			BadGatewayWithUrgency,
+			ErrBadGatewayWithUrgency,
 			nil,
 			nil,
 			nil,
@@ -37,10 +37,10 @@ var (
 		},
 		{
 			errors.New("test03"),
-			BadGateway,
+			ErrBadGateway,
 			[]string{"message"},
 			errors.New("test03"),
-			BadGateway,
+			ErrBadGateway,
 			strings.Repeat("message\n", 9) + "message",
 		},
 	}
@@ -57,19 +57,19 @@ var (
 	}{
 		{
 			"new error(developer)",
-			InternalServerError,
+			ErrInternalServerError,
 			nil,
 			errors.New("new error(developer)"),
-			InternalServerError,
-			InternalServerError.Error(),
+			ErrInternalServerError,
+			ErrInternalServerError.Error(),
 		},
 		{
 			"",
-			NotFound,
+			ErrNotFound,
 			nil,
-			NotFound,
-			NotFound,
-			NotFound.Error(),
+			ErrNotFound,
+			ErrNotFound,
+			ErrNotFound.Error(),
 		},
 	}
 )
@@ -82,7 +82,7 @@ func TestWrapPerr(t *testing.T) {
 				if len(ps) == 0 {
 					ps = append(ps, Wrap(tt.in, tt.as, tt.msg...))
 				} else {
-					ps = append(ps, Wrap(ps[i-1], BadGateway, tt.msg...))
+					ps = append(ps, Wrap(ps[i-1], ErrBadGateway, tt.msg...))
 				}
 			}
 
